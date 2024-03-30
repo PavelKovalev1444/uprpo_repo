@@ -2,21 +2,20 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - '*'
 
   workflow_dispatch:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@master
+      - uses: actions/setup-python@v3
         with:
-          python-version: '3.6'
+          python-version: '3.8.10'
       - run: if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: install pycodestyle

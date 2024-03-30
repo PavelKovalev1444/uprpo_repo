@@ -1,107 +1,44 @@
-class Node:
-    def __init__(self, data, prev = None, next = None):
-        self.__data = data
-        self.__prev__ = prev
-        self.__next__ = next
-    
-    
-    def get_data(self):
-        return self.__data
-    
-    
-    def __str__(self):
-        if(self.__prev__):
-            prev = self.__prev__.__data
-        else:
-            prev = None
-        if (self.__next__):
-            next_1 = self.__next__.__data
-        else:
-            next_1 = None
-        return "data: {}, prev: {}, next: {}".format(self.__data, prev.__str__(), next_1.__str__())
-
-    
-class LinkedList(list):
-    def __init__(self, first = None, last = None):
-        self.__first__ = None
-        self.__last__ = None
-        self.__length = 0
-        if (first == None) and (last != None):
-            raise ValueError("invalid value for last")
-        elif (first != None) and (last == None):
-            node = Node(first)
-            self.__first__ = node
-            self.__last__ = node
-            self.__length = 1
-        elif (first != None) and (last != None):
-            node1 = Node(first)
-            node2 = Node(last)
-            node1.__next__ = node2
-            node2.__prev__ = node1
-            self.__first__ = node1
-            self.__last__ = node2
-            self.__length = 2
-    
-    
-    def __len__(self):  
-        return self.__length
-
-
-    def __str__(self):
-        if self.__length == 0:
-            return "LinkedList[]"
-        element = self.__first__
-        array = []
-        while element != None:
-            array.append(str(element))
-            element = element.__next__
-        return "LinkedList[length = {}, [".format(self.__length) + "; ".join(array) + "]]"     
-    
-    
-    def append(self, element):
-        node = Node(element)
-        self.__length += 1
-        if self.__first__ == None:
-            self.__first__ = node
-            self.__last__ = node
-        else:
-            node.__prev__ = self.__last__
-            self.__last__.__next__ = node
-            self.__last__ = node        
-
-
-    def pop(self):
-        if self.__length == 0:
-            raise IndexError("LinkedList is empty!")
-        else:
-            self.__last__.__prev__.__next__ = None
-            self.__length -= 1
-
-
-
-    def popitem(self, other):    
-        if len(self) == 0:
-            raise KeyError("{} doesn't exist!".format(other))
-        else:
-            element = self.__first__
-            while element:
-                if element.get_data() == other:
-                    self.__length -= 1
-                    if element.__prev__ != None:
-                        element.__prev__.__next__ = element.__next__
-                    else:
-                        self.__first__ = element.__next__
-                    if element.__next__ != None:
-                        element.__next__.__prev__ = element.__prev__
-                    else:
-                        self.__last__ = element.__prev__
-                    break
-                element = element.__next__
-                if (element.__next__ == None) and (element.get_data() != other):
-                    raise KeyError("{} doesn't exist!".format(other))    
-
-        
-    def clear(self):
-        self.__first__ = None
-        self.__last__ = None
-        self.__length = 0
+import wikipedia
+def is_page_valid(page):
+    try:
+        wikipedia.page(page)
+    except Exception:
+        return False
+    return True
+pagesAndlanguage = input().split(', ')
+#Point1
+def language_settle(pagesAndlanguage):
+    flag = 0                                                                    
+    if pagesAndlanguage[-1] in wikipedia.languages():                           
+        wikipedia.set_lang(pagesAndlanguage[-1])                                
+        flag=1                                                                  
+    else:                                                                       
+        print('no results')                                                     
+    return flag
+#Point2
+if language_settle(pagesAndlanguage) == 1:
+    def max_words_and_title(pagesAndlanguage):
+        maximum_words = 0
+        maximum_title = ''
+        for i in range(len(pagesAndlanguage)-1):
+            words = wikipedia.page(pagesAndlanguage[i]).summary.split()
+            words = len(words)
+            if words > maximum_words:
+                maximum_words = words
+                maximum_title=wikipedia.page(pagesAndlanguage[i]).title
+        return str(maximum_words)+' '+str(maximum_title)
+#Point3 
+    def output_spisok(pagesAndlanguage):
+        output = [pagesAndlanguage[0]]
+        for i in range(len(pagesAndlanguage)-1):
+            link = wikipedia.page(pagesAndlanguage[i]).links
+            if (str(pagesAndlanguage[i+1]) in link) and (pagesAndlanguage[i+1] != len(pagesAndlanguage)-1):
+                output.append(pagesAndlanguage[i+1])
+            else:
+                for j in link:
+                    if is_page_valid(j) and (pagesAndlanguage[i+1] in wikipedia.page(j).links):
+                        output.append(j)
+                        output.append(pagesAndlanguage[i+1])
+        return(output)
+    print(max_words_and_title(pagesAndlanguage))
+    print(output_spisok(pagesAndlanguage))
